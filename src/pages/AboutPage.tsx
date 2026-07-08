@@ -44,6 +44,8 @@ const copy = {
     licenseHref: 'https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh-hans',
     contactTitle: '授权与合作',
     contactBody: '如需转载、课程合作、企业内训或其他授权使用，请先联系版权方并取得书面许可。',
+    contactLabel: '联系方式',
+    contactEmail: 'yuhaipeng@hclife.cn',
   },
   en: {
     eyebrow: 'HCLife Education',
@@ -84,6 +86,8 @@ const copy = {
     licenseHref: 'https://creativecommons.org/licenses/by-nc-nd/4.0/',
     contactTitle: 'Permission & Collaboration',
     contactBody: 'For republication, course collaboration, enterprise training, or other licensed uses, please contact the copyright holder and obtain written permission first.',
+    contactLabel: 'Contact',
+    contactEmail: 'yuhaipeng@hclife.cn',
   },
 };
 
@@ -151,6 +155,15 @@ export default function AboutPage() {
           <section className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-6">
             <h2 className="text-xl font-semibold text-white">{t.contactTitle}</h2>
             <p className="mt-4 text-sm leading-7 text-slate-400">{t.contactBody}</p>
+          </section>
+
+          <section className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-6">
+            <h2 className="text-xl font-semibold text-white">{t.contactLabel}</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-400">
+              <a className="font-semibold text-blue-300 transition hover:text-blue-200" href={`mailto:${t.contactEmail}`}>
+                {t.contactEmail}
+              </a>
+            </p>
           </section>
         </aside>
       </main>
