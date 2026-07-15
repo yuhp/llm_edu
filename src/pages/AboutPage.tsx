@@ -30,7 +30,7 @@ const copy = {
       {
         icon: BadgeCheck,
         title: '授权展示',
-        body: '本站内容已独家授权于 hclife.cn（公司门户）及 www.javayu.com（个人博客）展示、引用与联播。',
+        body: '本站内容已独家授权于公司门户（hclife.cn）和个人博客（yuhp.dev、javayu.com）展示、引用与联播。',
       },
       {
         icon: ShieldCheck,
@@ -72,7 +72,7 @@ const copy = {
       {
         icon: BadgeCheck,
         title: 'Authorized Publication',
-        body: 'hclife.cn, the company portal, and www.javayu.com, the personal blog, hold an exclusive license to display, quote, and syndicate this content.',
+        body: 'The company portal (hclife.cn) and personal blogs (yuhp.dev and javayu.com) hold an exclusive license to display, quote, and syndicate this content.',
       },
       {
         icon: ShieldCheck,
