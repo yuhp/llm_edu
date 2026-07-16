@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Globe2, Sparkles } from 'lucide-react';
 import { Lang } from '../types';
 
@@ -41,6 +41,11 @@ export default function PageChrome({
   headerAside,
 }: PageChromeProps) {
   const legal = legalCopy[lang];
+
+  useEffect(() => {
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.title = `${title} | HCLife Education`;
+  }, [lang, title]);
 
   return (
     <div className="min-h-screen px-4 py-6 text-slate-200 md:px-6 lg:px-8">

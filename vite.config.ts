@@ -13,6 +13,7 @@ export default defineConfig({
         about: path.resolve(__dirname, 'about.html'),
         evolution: path.resolve(__dirname, 'evolution.html'),
         clientTools: path.resolve(__dirname, 'client-tools.html'),
+        modelBoundaries: path.resolve(__dirname, 'model-boundaries.html'),
       },
     },
   },
