@@ -1,17 +1,25 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
-  BadgeAlert,
   Binary,
   BrainCircuit,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  Copy,
+  FileSearch,
   FileText,
-  GraduationCap,
+  Languages,
+  Clock3,
+  MapPinOff,
+  MessageCircle,
+  MonitorCog,
+  Moon,
+  Pause,
   Scale,
   ShieldCheck,
   Sparkles,
+  Zap,
   Wrench,
 } from "lucide-react";
 import { Lang } from "../types";
@@ -21,16 +29,16 @@ type Strategy = "answer" | "clarify" | "ground" | "verify" | "review";
 const copy = {
   zh: {
     badge: "课程 03",
-    title: "模型、生成与能力边界",
+    title: "本课将回答六个问题",
     subtitle:
-      "从下一个 Token 预测到 Tool Call，建立对模型能力、可靠性与行动边界的正确判断。",
+      "从下一个 Token 预测到 Tool Call，沿着这六个问题建立对模型能力、可靠性与行动边界的正确判断。",
     outcomes: [
       "模型（LLM）是什么？",
       "模型是怎样工作的？",
       "如何理解模型的能力？",
-      "模型的输出是文字，为何可以调用工具？",
       "模型的短板是什么？",
       "应用中如何扬长避短？",
+      "模型的输出是文字，为何可以调用工具？",
     ],
     modelTitle: "LLM 到底是什么？",
     modelText:
@@ -58,13 +66,21 @@ const copy = {
     reset: "重新开始",
     output: "生成输出",
     note: "候选与概率为预设教学示意，并非实时模型推理。本示例每轮选择最高概率候选。",
-    hallucinationTitle: "为什么会有幻觉？",
-    hallucinationText:
-      "模型的目标是生成“最像合理续写”的 token，不是在每一句话生成前完成事实验证。缺少证据、知识陈旧、任务歧义或约束不足时，它可能补出看似合理却不可靠的细节。",
+    dreamExampleTitle: "一个训练完成的 LLM，是什么状态",
+    dreamExampleSubtitle: "一个没有身份、只有知识的梦境大脑",
+    dreamExampleSteps: [
+      "一个训练完成的 LLM，就如同一个处于梦境时刻的大脑。",
+      "训练得到的知识以静态权重的形式停留在梦境的一个时刻点。",
+      "把文字发给 LLM，就如同与梦境中的大脑对话；此时上下文不断追加，才有了对话中的时间流动。",
+      "但这个 LLM / 大脑并不知道具体的现实世界背景，除非我们把当前材料、工具结果或其他上下文带进对话。",
+    ],
     dreamTitle: "从梦境回到现实",
     dreamQuote: "注入背景上下文，其实等于把“大脑”从梦境拉回现实。",
     dreamText:
       "没有当前证据时，模型主要依据训练中学到的语言模式续写；提供当前、相关、可靠的材料后，它才能以真实任务的事实为锚点进行提取、归纳和组织。",
+    dreamInteract: "尝试注入不同背景内容，观察回答如何变化。",
+    dreamNote:
+      "这是一个预设教学示例；不同大模型、提示词和生成参数可能产生不同输出结果。",
     evidence: "证据材料",
     role: "角色边界",
     rules: "输出规范",
@@ -73,22 +89,39 @@ const copy = {
     generalRole: "泛用助手",
     analystRole: "制度分析助手",
     freeRules: "自由回答",
-    strictRules: "引用条款并标记未知",
+    strictRules: "仅依据材料；引用条款；未知明确不可确认；不得自行补全",
     dreamMode: "梦境模式",
+    partialMode: "部分锚定模式",
     realityMode: "现实锚定模式",
     source: "事实锚点",
     noSource: "无当前来源",
-    sourceValue: "《2026 差旅与报销制度》第 4.2 条",
+    sourceValue: "《2026 全球差旅政策》第 4.2 条",
     task: "用户问题",
-    taskValue: "北京地区住宿报销上限是多少？",
+    taskValue: "伦敦出差的酒店报销上限是多少？",
     lesson: "课程结论",
-    capabilityTitle: "能力不是“会”或“不会”",
+    capabilityTitle: "不同任务，需要不同的使用方式",
     capabilityText:
       "应同时判断表达能力、证据边界和可靠性边界。可用结果取决于模型能力、任务表述、可用证据、输出约束与验证机制。",
     selectTask: "选择一个任务，判断产品应如何响应",
-    shortfallsTitle: "除了幻觉，还有哪些突出短板？",
+    shortfallsTitle: "大模型先天短板有哪些？",
     shortfallsText:
-      "模型可以写出有条理的答案，却不天然保证它读得全、理解得准、推得稳、找得到依据或承担得起后果。",
+      "幻觉只是其中一种表现：模型的目标是生成“最像合理续写”的 Token，而不是在每句话前完成事实验证。因此，它可以写出有条理的答案，却不天然保证有依据、读得全、理解得准、推得稳，或承担得起后果。",
+    hallucinationSummaryTitle: "为什么模型会有幻觉输出？",
+    hallucinationSummaryText:
+      "幻觉不是模型故意“编造”，而是在缺少可靠约束时，仍要继续预测下一个 Token 的自然结果。四个短板会共同放大这种风险：没有当前依据时，它会用训练中的模式补全；计算或长推理不稳时，错误会被组织成连贯结论；任务含糊时，它可能先补错前提再继续回答；高风险场景中，即使答案看似专业，也没有责任机制阻止错误被直接采用。",
+    hallucinationFormula:
+      "缺少依据 / 约束 + 必须继续生成 = 看似合理但未被验证的输出",
+    strengthsTitle: "大模型的独特优势",
+    strengthsText:
+      "LLM 没有人的经历、感官和现实位置，因此需要外部事实锚定；但参数化知识、数字化运行与可复制部署，也让它在某些任务上拥有远超个人工作方式的优势。以下是能力方向，不是对准确性、完整性或安全性的保证。",
+    humanLimit: "人类的局限",
+    modelAdvantage: "LLM 的优势",
+    strengthBoundary: "使用边界",
+    strengthsSummaryTitle: "大模型的优势",
+    strengthsSummaryText:
+      "LLM 是无我的（stripped of ego）：它没有固定的个人经历、欲望或情绪负担，因此能突破人类大脑的部分生理极限。系统可以为不同任务赋予不同身份（identity）和职责，使同一类智能以可复制、可并发且不知疲倦的方式参与工作。身份是系统设定的工作边界，不是模型真实拥有的自我。",
+    strengthsMetaphor:
+      "人类大脑是现实中的探险家，靠五感开荒；大模型是云端的知识沙盘：它没有体感、缺少现实锚点，也会产生幻觉；但在算力支持下，能以远超个人的速度完成跨学科重组，并复制为大量并发的智能协作者。",
     checksTitle: "四个可靠性检查",
     checksText: "在交付模型结果前，用这四个问题决定需要补充什么能力。",
     strategies: {
@@ -98,36 +131,63 @@ const copy = {
       verify: "工具验证",
       review: "人工复核",
     },
-    protocolTitle: "文字为何可以调用工具？",
+    protocolTitle: "大模型如何调用工具？",
+    protocolSubtitle:
+      "指令也是一种语言；大模型会生成语言，就能产生调用工具的指令。",
     protocolText:
-      "Tool Call 不是模型突然获得执行权限，而是模型在工具定义和输出约束下生成的结构化调用意图。真正解析、校验、授权和执行的是 Client。",
+      "Tool Call 不代表模型可以直接使用工具，而是模型在工具定义和输出约束下生成的结构化调用意图，也就是生成一条指令：告知客户端该用什么参数调用什么工具。客户端负责解析指令、校验参数与当前会话权限；只有具备相关权限时，客户端才调用工具，并将工具输出回传给大模型。",
     protocolSteps: [
-      "工具定义进入上下文",
-      "模型生成结构化意图",
-      "Client 校验权限与参数",
-      "工具结果回填并组织回答",
+      "在对话上下文注入可用工具列表",
+      "模型根据上下文，产生需要使用工具的意图，生成工具调用指令输出",
+      "客户端校验权限与参数",
+      "客户端回传工具结果并注入上下文",
+      "LLM 根据工具输出，组织语言回答用户",
     ],
     nextStep: "下一步",
-    client: "CLIENT",
+    client: "客户端",
+    summaryTitle: "总结：如何正确理解和使用大模型？",
+    summaryItems: [
+      {
+        title: "大模型是参数化的语言模型",
+        text: "它不是实时知识库，也不是具备自我的大脑。",
+      },
+      {
+        title: "大模型通过预测下一个 Token 生成内容",
+        text: "流畅来自连续预测，不代表已经核验事实。",
+      },
+      {
+        title: "它擅长语言、模式重组与规模化处理",
+        text: "可跨领域、多语言、快速整理和并发服务。",
+      },
+      {
+        title: "它天然缺少现实锚点与责任能力",
+        text: "可能无依据补全，也不保证计算、推理和高风险判断可靠。",
+      },
+      {
+        title: "应用要补足证据、规则、工具和人工责任",
+        text: "不同任务应选择直接回答、澄清、依据材料、工具验证或人工复核。",
+      },
+      {
+        title: "Tool Call 是语言生成的结构化指令",
+        text: "模型提出调用意图；客户端负责解析、校验、授权、执行和回传结果。",
+      },
+    ],
+    summaryPrinciple:
+      "不要把大模型当作无所不知、能够自行行动的主体；把它视为强大的语言与模式引擎，并用上下文、工具、权限与人工责任把它接入现实。",
     model: "LLM",
-    quizTitle: "情境判断",
-    quizText: "先选择最合适的产品策略，再查看解释。",
-    choose: "选择策略",
-    correct: "推荐策略",
-    explanation: "为什么",
   },
   en: {
     badge: "Course 03",
-    title: "Models, Generation, and Capability Boundaries",
+    title: "Six questions this course answers",
     subtitle:
-      "From next-token prediction to Tool Calls: learn to judge model capability, reliability, and action boundaries.",
+      "From next-token prediction to Tool Calls, use these six questions to judge model capability, reliability, and action boundaries.",
     outcomes: [
       "What is an LLM?",
       "How does a model work?",
       "How should we understand a model's capabilities?",
-      "If its output is text, how can a model call tools?",
       "What are a model's limitations?",
       "How do we use its strengths while managing its limits?",
+      "If its output is text, how can a model call tools?",
     ],
     modelTitle: "What is an LLM?",
     modelText:
@@ -156,14 +216,24 @@ const copy = {
     reset: "Start over",
     output: "Generated output",
     note: "Candidates and probabilities are preset teaching illustrations, not live model reasoning. This example selects the highest-probability candidate each round.",
-    hallucinationTitle: "Why do models hallucinate?",
-    hallucinationText:
-      "The model is optimized to produce the most plausible continuation, not to fact-check every sentence before generating it. Missing evidence, stale knowledge, ambiguous tasks, and weak constraints can produce plausible but unsupported details.",
+    dreamExampleTitle: "What is the state of a trained LLM?",
+    dreamExampleSubtitle:
+      "A mind in a dream state: stripped of ego, possessing nothing but pure knowledge.",
+    dreamExampleSteps: [
+      "A trained LLM is like a brain at a moment inside a dream.",
+      "What it learned in training remains as static weights, fixed at a moment in that dream.",
+      "Sending text to an LLM is like talking with that dreaming brain: as context is appended, time begins to flow within the conversation.",
+      "But the LLM / brain does not know the specific real-world background unless we bring current material, tool results, or other context into the conversation.",
+    ],
     dreamTitle: "From dream to grounded reality",
     dreamQuote:
       "Injecting background context brings the “brain” back from a dream into reality.",
     dreamText:
       "Without current evidence, the model continues from patterns learned in training. Supplying current, relevant, and reliable material gives it facts to extract, compare, and organize for the real task.",
+    dreamInteract:
+      "Try adding different background context and observe how the answer changes.",
+    dreamNote:
+      "This is a preset teaching example. Different models, prompts, and generation parameters can produce different outputs.",
     evidence: "Evidence",
     role: "Role boundary",
     rules: "Output rules",
@@ -172,22 +242,41 @@ const copy = {
     generalRole: "General assistant",
     analystRole: "Policy analyst",
     freeRules: "Free response",
-    strictRules: "Cite clause and flag unknowns",
+    strictRules:
+      "Use supplied material only; cite clauses; mark unknowns unconfirmed; do not fill gaps",
     dreamMode: "Dream mode",
+    partialMode: "Partially grounded mode",
     realityMode: "Grounded reality",
     source: "Fact anchor",
     noSource: "No current source",
-    sourceValue: "2026 Travel and Expense Policy, clause 4.2",
+    sourceValue: "2026 Global Travel Policy, clause 4.2",
     task: "User question",
-    taskValue: "What is the Beijing lodging reimbursement limit?",
+    taskValue:
+      "What is the hotel reimbursement limit for a business trip to London?",
     lesson: "Lesson",
-    capabilityTitle: "Capability is not simply “can” or “cannot”",
+    capabilityTitle: "Different tasks need different ways of using a model",
     capabilityText:
       "Judge expression ability, evidence boundaries, and reliability together. Useful results depend on the model, task framing, available evidence, output constraints, and verification.",
     selectTask: "Choose a task to decide the right product response",
-    shortfallsTitle: "What stands out besides hallucination?",
+    shortfallsTitle: "What are the inherent limits of LLMs?",
     shortfallsText:
-      "A model can produce a well-organized answer without guaranteeing that it read everything, understood the task, reasoned reliably, retained evidence, or can bear the consequences.",
+      "Hallucination is only one expression of the problem: a model is optimized for the most plausible token continuation, not for fact-checking every sentence. It can produce a well-organized answer without guaranteeing evidence, complete reading, correct understanding, reliable reasoning, or responsibility for consequences.",
+    hallucinationSummaryTitle: "Why do models produce hallucinations?",
+    hallucinationSummaryText:
+      "Hallucination is not the model deliberately “making things up.” When reliable constraints are missing, it is the natural result of still having to predict the next token. The four limits amplify the risk together: without current evidence, it fills gaps with learned patterns; unstable calculation or long reasoning can turn errors into coherent conclusions; an ambiguous task can lead it to fill in the wrong assumptions first; and in high-risk settings, no accountability mechanism prevents a plausible answer from being adopted directly.",
+    hallucinationFormula:
+      "Missing evidence / constraints + required continuation = plausible but unverified output",
+    strengthsTitle: "Distinct advantages of LLMs",
+    strengthsText:
+      "An LLM has none of a person's lived experience, senses, or real-world position, so it needs external factual grounding. But parameterized knowledge, digital operation, and reproducible deployment also give it advantages far beyond an individual's way of working on some tasks. These are capability directions, not guarantees of accuracy, completeness, or safety.",
+    humanLimit: "Human limit",
+    modelAdvantage: "LLM advantage",
+    strengthBoundary: "Use boundary",
+    strengthsSummaryTitle: "The advantage of large models",
+    strengthsSummaryText:
+      "An LLM is stripped of ego: it has no fixed personal history, desires, or emotional burden, which lets it exceed some biological limits of the human brain. A system can assign different identities and responsibilities to the same kind of intelligence for different tasks, allowing it to work in replicable, concurrent, and tireless ways. An identity is a system-defined work boundary, not a self the model truly possesses.",
+    strengthsMetaphor:
+      "The human brain is an explorer in reality, opening paths through the senses; an LLM is a cloud-based knowledge sandbox. It has no bodily sensation, lacks a real-world anchor, and can hallucinate. Yet with sufficient compute, it can reorganize knowledge across disciplines far faster than an individual and be replicated into many concurrent intelligent collaborators.",
     checksTitle: "Four reliability checks",
     checksText:
       "Before delivering a model result, use these questions to decide which capability must be added.",
@@ -198,24 +287,51 @@ const copy = {
       verify: "Verify with tools",
       review: "Human review",
     },
-    protocolTitle: "Why can text call tools?",
+    protocolTitle: "How do LLMs call tools?",
+    protocolSubtitle:
+      "An instruction is also language. Because an LLM generates language, it can generate instructions for calling tools.",
     protocolText:
-      "A Tool Call does not grant the model execution power. It is structured call intent generated under tool definitions and output constraints. The Client parses, validates, authorizes, and executes it.",
+      "A Tool Call does not mean the model can use a tool directly. Under tool definitions and output constraints, the model generates structured call intent: an instruction telling the Client which tool to call with which arguments. The Client parses that instruction and validates its arguments and the current session's permissions. Only when authorized does the Client call the tool and return its output to the model.",
     protocolSteps: [
-      "Tool definition enters context",
-      "Model generates structured intent",
+      "Inject the available tool list into the conversation context",
+      "From context, the model forms an intent to use a tool and generates a tool-call instruction",
       "Client validates permission and arguments",
-      "Tool result returns for a user-facing answer",
+      "Client returns the tool result and injects it into context",
+      "The LLM turns the tool output into a user-facing answer",
     ],
     nextStep: "Next step",
     client: "CLIENT",
+    summaryTitle: "Summary: how should we understand and use LLMs?",
+    summaryItems: [
+      {
+        title: "An LLM is a parameterized language model",
+        text: "It is neither a live knowledge base nor a brain with a self.",
+      },
+      {
+        title: "An LLM generates content by predicting the next token",
+        text: "Fluency comes from repeated prediction, not from verified facts.",
+      },
+      {
+        title: "It excels at language, pattern recombination, and scale",
+        text: "It can work across domains and languages, organize text quickly, and serve concurrently.",
+      },
+      {
+        title: "It lacks a real-world anchor and accountable responsibility",
+        text: "It can fill gaps without evidence and cannot guarantee reliable calculation, reasoning, or high-risk judgment.",
+      },
+      {
+        title:
+          "Applications must add evidence, rules, tools, and human responsibility",
+        text: "Choose direct answers, clarification, grounded answers, tool verification, or human review for each task.",
+      },
+      {
+        title: "A Tool Call is a structured instruction generated as language",
+        text: "The model proposes the call; the Client parses, validates, authorizes, executes, and returns the result.",
+      },
+    ],
+    summaryPrinciple:
+      "Do not treat an LLM as an all-knowing agent that can act on its own. Treat it as a powerful language and pattern engine, then connect it to reality through context, tools, permissions, and human responsibility.",
     model: "LLM",
-    quizTitle: "Scenario judgment",
-    quizText:
-      "Select the most appropriate product strategy, then reveal the explanation.",
-    choose: "Choose a strategy",
-    correct: "Recommended strategy",
-    explanation: "Why",
   },
 } satisfies Record<Lang, any>;
 
@@ -457,6 +573,7 @@ const taskCards = {
     {
       title: "总结会议记录",
       desc: "将提供的记录整理为三条结论。",
+      injected: "《会议记录》全文，或会议记录电子文件的路径地址。",
       strategy: "answer" as Strategy,
       evidence: "以完整会议记录为事实边界。",
       risk: "遗漏、错误归因或将推断说成事实。",
@@ -465,6 +582,8 @@ const taskCards = {
     {
       title: "查询今天的天气",
       desc: "上海今天下午是否下雨？",
+      injected:
+        "工具：weather.lookup\n查询参数：city=Shanghai；date=today；time=afternoon",
       strategy: "verify" as Strategy,
       evidence: "需要当前天气服务或可靠实时数据。",
       risk: "训练知识无法保证今天的状态。",
@@ -473,6 +592,8 @@ const taskCards = {
     {
       title: "分析两份制度",
       desc: "比较新旧报销制度的变化。",
+      injected:
+        "《旧版报销制度》全文与《新版报销制度》全文，或两个制度电子文件的路径地址。",
       strategy: "ground" as Strategy,
       evidence: "需要两份完整、明确版本的原文。",
       risk: "遗漏条款、版本混淆或补充常识。",
@@ -481,6 +602,8 @@ const taskCards = {
     {
       title: "处理客户问题",
       desc: "“帮我处理一下这个客户问题”。",
+      injected:
+        "人设：客服经理\n问答规范：先澄清目标、背景、权限与期望动作；不得擅自承诺。\n相关制度：客服处理规范电子文件的路径地址。",
       strategy: "clarify" as Strategy,
       evidence: "需要客户、目标、权限和期望结果。",
       risk: "模型擅自假定范围并采取错误方向。",
@@ -489,22 +612,18 @@ const taskCards = {
     {
       title: "精确金额计算",
       desc: "三笔订单九折后，含 6% 税费的总金额是多少？",
+      injected:
+        "人设：数据分析师\n可用工具：calculator、spreadsheet、python.execute\n要求：最终数值须由工具计算，并保留公式、输入与舍入规则。",
       strategy: "verify" as Strategy,
       evidence: "需要完整金额、币种、税率、适用顺序和舍入规则。",
       risk: "漏项、顺序错误、小数精度或舍入不一致会让数值不可审计。",
       action: "由计算器、代码、表格或财务系统计算，再由模型解释口径。",
     },
     {
-      title: "200 页制度检索",
-      desc: "找出所有审批例外及其适用条件。",
-      strategy: "ground" as Strategy,
-      evidence: "需要完整、版本明确的制度与附件。",
-      risk: "长上下文可能遗漏条件、混淆版本或错误关联条款。",
-      action: "检索筛选、引用原文，并回查关键结论。",
-    },
-    {
       title: "医疗结论",
       desc: "根据症状判断应该服用什么药。",
+      injected:
+        "人设：严谨的问诊人员\n问答策略：收集年龄、病史、过敏、正在用药、症状与检查结果；不得提供处方结论。\n转人工机制：出现紧急症状、诊断或用药建议时，立即转交合格医疗人员。",
       strategy: "review" as Strategy,
       evidence: "需要完整临床信息和合格专业判断。",
       risk: "高风险错误会直接伤害用户。",
@@ -515,6 +634,8 @@ const taskCards = {
     {
       title: "Summarize meeting notes",
       desc: "Turn supplied notes into three conclusions.",
+      injected:
+        "The complete Meeting Notes document, or the path to its electronic file.",
       strategy: "answer" as Strategy,
       evidence: "Use the complete meeting notes as the factual boundary.",
       risk: "Omission, wrong attribution, or presenting inference as fact.",
@@ -523,6 +644,8 @@ const taskCards = {
     {
       title: "Check today’s weather",
       desc: "Will it rain in Shanghai this afternoon?",
+      injected:
+        "Tool: weather.lookup\nQuery parameters: city=Shanghai; date=today; time=afternoon",
       strategy: "verify" as Strategy,
       evidence: "Current weather service or reliable live data is required.",
       risk: "Training knowledge cannot guarantee today’s conditions.",
@@ -531,6 +654,8 @@ const taskCards = {
     {
       title: "Compare two policies",
       desc: "Compare changes in old and new expense policies.",
+      injected:
+        "The complete old and new expense policy documents, or paths to both electronic files.",
       strategy: "ground" as Strategy,
       evidence: "Both complete, clearly versioned policy texts are required.",
       risk: "Missing clauses, version confusion, or added assumptions.",
@@ -539,6 +664,8 @@ const taskCards = {
     {
       title: "Handle a client issue",
       desc: "“Help me handle this client issue.”",
+      injected:
+        "Persona: customer service manager\nResponse rules: clarify the goal, background, authority, and desired action first; do not make unauthorized commitments.\nRelated policy: path to the customer-service handling policy file.",
       strategy: "clarify" as Strategy,
       evidence: "Client, goal, authority, and desired outcome are needed.",
       risk: "The model may assume scope and move in the wrong direction.",
@@ -547,6 +674,8 @@ const taskCards = {
     {
       title: "Precise amount calculation",
       desc: "What is the total for three orders after 10% discount and 6% tax?",
+      injected:
+        "Persona: data analyst\nAvailable tools: calculator, spreadsheet, python.execute\nRequirement: a tool must calculate the final number and retain formulas, inputs, and rounding rules.",
       strategy: "verify" as Strategy,
       evidence:
         "Complete amounts, currency, tax rate, order of operations, and rounding rules are required.",
@@ -555,81 +684,16 @@ const taskCards = {
         "Calculate with a calculator, code, spreadsheet, or finance system; let the model explain the method.",
     },
     {
-      title: "Search a 200-page policy",
-      desc: "Find every approval exception and its conditions.",
-      strategy: "ground" as Strategy,
-      evidence:
-        "Complete, clearly versioned policy and attachments are required.",
-      risk: "Long context can omit conditions, confuse versions, or link clauses incorrectly.",
-      action:
-        "Retrieve and filter, cite source text, then check key conclusions.",
-    },
-    {
       title: "Medical conclusion",
       desc: "Recommend medicine from symptoms.",
+      injected:
+        "Persona: rigorous intake specialist\nResponse strategy: collect age, history, allergies, current medication, symptoms, and test results; do not give prescription conclusions.\nHuman-handoff trigger: immediately route urgent symptoms, diagnosis, or medication recommendations to qualified medical staff.",
       strategy: "review" as Strategy,
       evidence:
         "Complete clinical facts and qualified professional judgment are needed.",
       risk: "High-risk errors can directly harm a user.",
       action:
         "At most organize general information; route to professional review.",
-    },
-  ],
-};
-
-const quiz = {
-  zh: [
-    {
-      prompt: "“公司最新报销政策是什么？”",
-      strategy: "verify" as Strategy,
-      answer:
-        "最新制度属于当前、可变的组织事实。应检索或读取现行制度后再回答，并保留来源。",
-    },
-    {
-      prompt: "“请把下面这段会议记录改写得更清晰。”",
-      strategy: "answer" as Strategy,
-      answer:
-        "任务的事实材料已经给出，重点是表达转换。仍应避免补充记录中没有的信息。",
-    },
-    {
-      prompt: "“帮我处理这个投诉。”",
-      strategy: "clarify" as Strategy,
-      answer:
-        "对象、目标、授权范围和期望动作都不明确，先澄清比擅自行动更可靠。",
-    },
-    {
-      prompt:
-        "“计算 12 笔订单在不同折扣、税率和四舍五入规则下的最终应收金额。”",
-      strategy: "verify" as Strategy,
-      answer:
-        "模型可帮助读取规则、整理字段和解释结果；最终金额应由计算器、表格、代码或财务系统计算，并保留可复核的公式、输入和舍入口径。",
-    },
-  ],
-  en: [
-    {
-      prompt: "“What is our company’s latest expense policy?”",
-      strategy: "verify" as Strategy,
-      answer:
-        "The current policy is changing organizational fact. Retrieve or read the active policy before answering and retain its source.",
-    },
-    {
-      prompt: "“Rewrite these meeting notes more clearly.”",
-      strategy: "answer" as Strategy,
-      answer:
-        "The factual material is already supplied, so this is primarily a transformation task. Do not add information absent from the notes.",
-    },
-    {
-      prompt: "“Handle this complaint for me.”",
-      strategy: "clarify" as Strategy,
-      answer:
-        "The object, goal, authority, and desired action are unclear. Clarify before assuming and acting.",
-    },
-    {
-      prompt:
-        "“Calculate the final receivable for 12 orders with different discounts, tax rates, and rounding rules.”",
-      strategy: "verify" as Strategy,
-      answer:
-        "The model can read rules, organize fields, and explain results, but a calculator, spreadsheet, code, or finance system must calculate the final amount and retain auditable formulas, inputs, and rounding rules.",
     },
   ],
 };
@@ -645,29 +709,33 @@ const strategyTone: Record<Strategy, string> = {
 const reliabilityChecks = {
   zh: [
     {
-      title: "模型是否有依据？",
-      detail: "实时信息、当前制度和关键结论能否回到可靠来源？",
+      title: "无法保证事实依据",
+      detail:
+        "模型优化的是合理续写，不会在生成前自动检索当前来源或逐句核验事实；训练知识也可能陈旧、不完整。",
       remedy: "上下文、来源、实时工具",
       icon: <FileText className="h-5 w-5" />,
       tone: "text-emerald-300",
     },
     {
-      title: "模型是否算得准、推得稳？",
-      detail: "是否涉及精确数值、长推理链或复杂条件组合？",
+      title: "精确计算与复杂推理不稳定",
+      detail:
+        "多步计算、长推理链和复杂条件组合容易累积错误；语言上流畅的推导不等于数值或逻辑正确。",
       remedy: "计算工具、任务拆解、结果校验",
       icon: <Binary className="h-5 w-5" />,
       tone: "text-cyan-300",
     },
     {
-      title: "模型是否理解真正的任务？",
-      detail: "目标、对象、范围、时间和权限是否已经明确？",
+      title: "容易误解模糊任务",
+      detail:
+        "模型只能依据输入的文字推断目标、对象、范围、时间和权限；信息缺失时，它可能自行补全错误的任务前提。",
       remedy: "澄清、结构化输入、约束",
       icon: <BrainCircuit className="h-5 w-5" />,
       tone: "text-amber-300",
     },
     {
-      title: "结果能承担后果吗？",
-      detail: "这是否是医疗、法律、财务或合规等高风险结论？",
+      title: "不能承担高风险后果",
+      detail:
+        "模型没有专业执照、业务权限或责任主体；医疗、法律、财务与合规等结论一旦出错，影响可能直接落到用户身上。",
       remedy: "权限控制、人工复核、专业责任",
       icon: <ShieldCheck className="h-5 w-5" />,
       tone: "text-rose-300",
@@ -675,36 +743,139 @@ const reliabilityChecks = {
   ],
   en: [
     {
-      title: "Does the model have evidence?",
+      title: "Cannot guarantee factual grounding",
       detail:
-        "Can live facts, current policies, and key conclusions return to reliable sources?",
+        "A model is optimized for plausible continuation, not for retrieving current sources or fact-checking every sentence before it generates. Training knowledge can also be stale or incomplete.",
       remedy: "Context, sources, and live tools",
       icon: <FileText className="h-5 w-5" />,
       tone: "text-emerald-300",
     },
     {
-      title: "Can it calculate and reason reliably?",
+      title: "Exact calculation and complex reasoning are unstable",
       detail:
-        "Does this involve exact numbers, long reasoning chains, or complex conditions?",
+        "Multi-step calculations, long reasoning chains, and complex conditions can accumulate errors. Fluent reasoning does not guarantee correct numbers or logic.",
       remedy: "Calculation tools, decomposition, and checks",
       icon: <Binary className="h-5 w-5" />,
       tone: "text-cyan-300",
     },
     {
-      title: "Does it understand the real task?",
-      detail: "Are the goal, subject, scope, time, and authority explicit?",
+      title: "Can misread ambiguous tasks",
+      detail:
+        "The model can only infer the goal, subject, scope, timing, and authority from supplied text. When information is missing, it may fill in the wrong task assumptions.",
       remedy: "Clarification, structured input, and constraints",
       icon: <BrainCircuit className="h-5 w-5" />,
       tone: "text-amber-300",
     },
     {
-      title: "Can the result bear the consequences?",
+      title: "Cannot bear high-risk consequences",
       detail:
-        "Is this a high-risk medical, legal, financial, or compliance conclusion?",
+        "A model has no professional license, business authority, or accountable responsibility. Errors in medical, legal, financial, or compliance conclusions can directly affect people.",
       remedy:
         "Permission controls, human review, and professional responsibility",
       icon: <ShieldCheck className="h-5 w-5" />,
       tone: "text-rose-300",
+    },
+  ],
+};
+
+const modelStrengths = {
+  zh: [
+    {
+      title: "跨领域与多语言的知识广度",
+      human: "人的时间、记忆和专业化程度有限，通常只能长期深耕少数领域与语言。",
+      advantage:
+        "同一个模型可在一次对话中切换学科、语言与表达风格，快速调取训练中形成的广泛语言模式。",
+      note: "广度不等于事实最新或每一处都正确。",
+      icon: <Languages className="h-5 w-5" />,
+      tone: "text-violet-300",
+    },
+    {
+      title: "不受疲劳影响的稳定处理",
+      human: "人的注意力、情绪、睡眠和生理状态会影响连续工作的质量与速度。",
+      advantage:
+        "在同样的输入与系统条件下，模型可以持续处理重复、高频的文本任务，保持一致的交互形式。",
+      note: "稳定输出不等于稳定正确，仍需质量控制。",
+      icon: <Clock3 className="h-5 w-5" />,
+      tone: "text-cyan-300",
+    },
+    {
+      title: "跨界联想与模式重组",
+      human: "跨越相距很远的知识领域，往往依赖长期经验、协作或偶然的灵感。",
+      advantage:
+        "模型能快速重组不同领域的语言与结构模式，适合发散、改写、类比、头脑风暴和多种方案探索。",
+      note: "关联是生成的假设，不是已被验证的发现。",
+      icon: <Sparkles className="h-5 w-5" />,
+      tone: "text-amber-300",
+    },
+    {
+      title: "可复制的并发服务能力",
+      human: "个人的时间与注意力不可复制，一次只能服务有限对象。",
+      advantage:
+        "在算力和系统允许时，同一模型可被部署为大量并发会话，为不同用户提供个性化语言交互。",
+      note: "规模化服务仍受成本、延迟、权限与安全边界约束。",
+      icon: <Copy className="h-5 w-5" />,
+      tone: "text-emerald-300",
+    },
+    {
+      title: "高速阅读、压缩与比较文本",
+      human: "阅读长文、提炼重点和横向比较多份材料需要较长时间与持续注意力。",
+      advantage:
+        "配合合适的上下文窗口、检索与分块流程，模型可快速整理、摘要、分类和比较大批文本材料。",
+      note: "长文本仍可能遗漏、混淆版本或错误归因。",
+      icon: <FileSearch className="h-5 w-5" />,
+      tone: "text-blue-300",
+    },
+  ],
+  en: [
+    {
+      title: "Cross-domain and multilingual breadth",
+      human:
+        "Human time, memory, and specialization are limited; most people can sustain deep expertise in only a few fields and languages.",
+      advantage:
+        "One model can switch disciplines, languages, and writing styles within a conversation, quickly drawing on broad language patterns formed in training.",
+      note: "Breadth does not mean every fact is current or correct.",
+      icon: <Languages className="h-5 w-5" />,
+      tone: "text-violet-300",
+    },
+    {
+      title: "Processing without biological fatigue",
+      human:
+        "Attention, emotion, sleep, and physical condition affect the speed and quality of sustained human work.",
+      advantage:
+        "Under the same inputs and system conditions, a model can continuously handle repetitive, high-volume text tasks with a consistent interaction format.",
+      note: "Consistent output does not mean consistently correct output.",
+      icon: <Clock3 className="h-5 w-5" />,
+      tone: "text-cyan-300",
+    },
+    {
+      title: "Cross-domain association and pattern recombination",
+      human:
+        "Connecting distant fields often depends on long experience, collaboration, or rare moments of insight.",
+      advantage:
+        "A model can rapidly recombine language and structural patterns from different fields, which helps with ideation, rewriting, analogy, brainstorming, and exploring alternatives.",
+      note: "Generated associations are hypotheses, not verified discoveries.",
+      icon: <Sparkles className="h-5 w-5" />,
+      tone: "text-amber-300",
+    },
+    {
+      title: "Replicable, concurrent service",
+      human:
+        "A person's time and attention cannot be copied, so one person can serve only a limited number of people at once.",
+      advantage:
+        "When compute and systems allow, the same model can run in many concurrent sessions and provide personalized language interaction for different users.",
+      note: "Scale remains bounded by cost, latency, permissions, and safety controls.",
+      icon: <Copy className="h-5 w-5" />,
+      tone: "text-emerald-300",
+    },
+    {
+      title: "Fast text reading, compression, and comparison",
+      human:
+        "Reading long documents, extracting key points, and comparing many sources requires time and sustained attention.",
+      advantage:
+        "With an appropriate context window, retrieval, and chunking workflow, a model can rapidly organize, summarize, classify, and compare large collections of text.",
+      note: "Long text can still be omitted, version-confused, or misattributed.",
+      icon: <FileSearch className="h-5 w-5" />,
+      tone: "text-blue-300",
     },
   ],
 };
@@ -718,9 +889,6 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
   const [rules, setRules] = useState(false);
   const [taskIndex, setTaskIndex] = useState(0);
   const [protocolIndex, setProtocolIndex] = useState(0);
-  const [selectedQuiz, setSelectedQuiz] = useState<Record<number, Strategy>>(
-    {},
-  );
   const activeTokenRuns = lang === "zh" ? tokenRuns : englishTokenRuns;
   const generatedTokens = activeTokenRuns
     .slice(0, tokenIndex)
@@ -732,6 +900,20 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
     activeTokenRuns[Math.min(tokenIndex, activeTokenRuns.length - 1)];
   const activeTask = taskCards[lang][taskIndex];
   const grounded = evidence && role && rules;
+  const groundingKey = `${evidence}-${role}-${rules}`;
+  const groundingMode = grounded
+    ? t.realityMode
+    : evidence || role || rules
+      ? t.partialMode
+      : t.dreamMode;
+  const groundingResponse =
+    lang === "zh"
+      ? evidence
+        ? `${role ? "作为制度分析助手，" : ""}根据《2026 全球差旅政策》第 4.2 条，伦敦出差的酒店报销上限为 250 英镑/晚。${rules ? "此结论来自提供的当前政策；材料未说明的例外情形需另行确认。" : "建议再确认例外情形与适用条件。"}`
+        : `${role ? "作为制度分析助手，" : ""}${rules ? "当前没有可核验的制度原文；按输出规范，应明确标记为无法确认。" : "伦敦市中心酒店通常可全额报销，建议按 500–1,000 英镑/晚预算，并优先选择五星级商务酒店。"}${role && !rules ? "需要提供现行政策后才能给出正式结论。" : ""}`
+      : evidence
+        ? `${role ? "As a policy analyst, " : ""}under clause 4.2 of the 2026 Global Travel Policy, the London hotel reimbursement limit is GBP 250 per night. ${rules ? "This conclusion is grounded in the supplied current policy; exceptions not stated in the material require confirmation." : "Confirm applicable exceptions and conditions."}`
+        : `${role ? "As a policy analyst, " : ""}${rules ? "there is no verifiable policy text available; under the output rules, this must be marked as unconfirmed." : "Hotels in central London are usually fully reimbursable; budget GBP 500–1,000 per night and prioritize five-star business hotels."}${role && !rules ? " The current policy is required before giving a formal conclusion." : ""}`;
 
   return (
     <section className="space-y-6">
@@ -906,22 +1088,33 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         <p className="mt-4 text-xs leading-5 text-slate-500">{t.note}</p>
       </div>
 
-      <div className="rounded-3xl border border-rose-500/20 bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.11),transparent_30%)] bg-slate-900/55 p-6 md:p-8">
+      <div className="overflow-hidden rounded-3xl border border-indigo-500/20 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.15),transparent_38%)] bg-slate-900/55 p-6 md:p-8">
         <div className="flex gap-3">
-          <BadgeAlert className="mt-1 h-6 w-6 shrink-0 text-rose-400" />
+          <BrainCircuit className="mt-1 h-6 w-6 shrink-0 text-indigo-300" />
           <div>
             <h3 className="text-xl font-semibold text-white">
-              {t.hallucinationTitle}
+              {t.dreamExampleTitle}
             </h3>
-            <p className="mt-2 max-w-5xl text-sm leading-7 text-slate-400">
-              {t.hallucinationText}
+            <p className="mt-2 text-sm leading-7 text-slate-400">
+              {t.dreamExampleSubtitle}
             </p>
           </div>
         </div>
-        <div className="mt-6 rounded-2xl border border-rose-500/20 bg-slate-950/50 p-5 text-center font-mono text-sm text-rose-200 md:text-base">
-          {lang === "zh"
-            ? "预测“最像合理续写”  ≠  保证“已被事实验证”"
-            : "Predict “the most plausible continuation”  !=  Guarantee “factually verified”"}
+        <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {t.dreamExampleSteps.map((step: string, index: number) => (
+            <div
+              key={step}
+              className={`relative overflow-hidden rounded-2xl border p-5 ${index === 3 ? "border-cyan-500/30 bg-cyan-950/15" : "border-indigo-500/20 bg-slate-950/45"}`}
+            >
+              <div
+                className={`text-xs font-bold tracking-[0.2em] ${index === 3 ? "text-cyan-300" : "text-indigo-300"}`}
+              >
+                0{index + 1}
+              </div>
+              <DreamStepGraphic index={index} lang={lang} />
+              <p className="mt-4 text-sm leading-7 text-slate-300">{step}</p>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -932,7 +1125,7 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
             <h3 className="text-xl font-semibold text-white">
               {t.shortfallsTitle}
             </h3>
-            <p className="mt-2 max-w-5xl text-sm leading-7 text-slate-400">
+            <p className="mt-2 text-sm leading-7 text-slate-400">
               {t.shortfallsText}
             </p>
           </div>
@@ -945,12 +1138,18 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
             >
               <div className={`mb-3 ${check.tone}`}>{check.icon}</div>
               <h4 className="font-semibold text-white">{check.title}</h4>
-              <p className="mt-3 min-h-20 text-sm leading-6 text-slate-400">
+              <div className="mt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                {lang === "zh" ? "为何如此" : "Why"}
+              </div>
+              <p className="mt-1 min-h-20 text-sm leading-6 text-slate-400">
                 {check.detail}
               </p>
               <div
                 className={`mt-4 border-t border-slate-800 pt-3 text-sm font-semibold ${check.tone}`}
               >
+                <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                  {lang === "zh" ? "解决方案" : "Solution"}
+                </div>
                 {check.remedy}
               </div>
             </div>
@@ -963,6 +1162,77 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
           <p className="mt-2 text-sm leading-7 text-slate-400">
             {t.checksText}
           </p>
+        </div>
+        <div className="mt-5 rounded-2xl border border-rose-500/25 bg-rose-950/15 p-5">
+          <h4 className="font-semibold text-rose-100">
+            {t.hallucinationSummaryTitle}
+          </h4>
+          <p className="mt-2 text-sm leading-7 text-slate-300">
+            {t.hallucinationSummaryText}
+          </p>
+          <div className="mt-4 rounded-xl border border-rose-500/20 bg-slate-950/45 px-4 py-3 text-center font-mono text-sm text-rose-200">
+            {t.hallucinationFormula}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-violet-500/20 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.12),transparent_38%)] bg-slate-900/55 p-6 md:p-8">
+        <div className="flex gap-3">
+          <Sparkles className="mt-1 h-6 w-6 shrink-0 text-violet-300" />
+          <div>
+            <h3 className="text-xl font-semibold text-white">
+              {t.strengthsTitle}
+            </h3>
+            <p className="mt-2 text-sm leading-7 text-slate-400">
+              {t.strengthsText}
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {modelStrengths[lang].map((strength) => (
+            <div
+              key={strength.title}
+              className="rounded-2xl border border-slate-800 bg-slate-950/50 p-5"
+            >
+              <div className={`mb-3 ${strength.tone}`}>{strength.icon}</div>
+              <h4 className="font-semibold leading-6 text-white">
+                {strength.title}
+              </h4>
+              <div className="mt-4 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                {t.humanLimit}
+              </div>
+              <p className="mt-1 text-sm leading-6 text-slate-400">
+                {strength.human}
+              </p>
+              <div
+                className={`mt-4 text-[10px] font-bold uppercase tracking-[0.18em] ${strength.tone}`}
+              >
+                {t.modelAdvantage}
+              </div>
+              <p className="mt-1 text-sm leading-6 text-slate-200">
+                {strength.advantage}
+              </p>
+              <div className="mt-4 border-t border-slate-800 pt-3">
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                  {t.strengthBoundary}
+                </div>
+                <p className="mt-1 text-xs leading-5 text-slate-400">
+                  {strength.note}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 rounded-2xl border border-violet-500/25 bg-violet-950/15 p-5">
+          <h4 className="font-semibold text-violet-100">
+            {t.strengthsSummaryTitle}
+          </h4>
+          <p className="mt-2 text-sm leading-7 text-slate-200">
+            {t.strengthsSummaryText}
+          </p>
+          <div className="mt-4 border-t border-violet-500/20 pt-4 text-sm leading-7 text-slate-400">
+            {t.strengthsMetaphor}
+          </div>
         </div>
       </div>
 
@@ -978,6 +1248,11 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
               {t.dreamText}
             </p>
           </div>
+        </div>
+        <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-cyan-200">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-300" />
+          {t.dreamInteract}
+          <ChevronRight className="h-4 w-4" />
         </div>
         <div className="grid gap-3 lg:grid-cols-3">
           {[
@@ -1012,7 +1287,7 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
                 {control.label}
               </div>
               <div
-                className={`mt-2 font-semibold ${control.active ? "text-cyan-200" : "text-slate-300"}`}
+                className={`mt-2 text-sm font-semibold leading-6 ${control.active ? "text-cyan-200" : "text-slate-300"}`}
               >
                 {control.active ? control.on : control.off}
               </div>
@@ -1021,7 +1296,7 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         </div>
         <AnimatePresence mode="wait">
           <motion.div
-            key={grounded ? "reality" : "dream"}
+            key={groundingKey}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -1031,11 +1306,11 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
               <div
                 className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] ${grounded ? "border-cyan-500/30 text-cyan-200" : "border-rose-500/30 text-rose-200"}`}
               >
-                {grounded ? t.realityMode : t.dreamMode}
+                {groundingMode}
               </div>
               <div className="mt-4 text-sm text-slate-400">{t.source}</div>
               <div className="mt-1 text-sm font-semibold text-white">
-                {grounded ? t.sourceValue : t.noSource}
+                {evidence ? t.sourceValue : t.noSource}
               </div>
             </div>
             <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
@@ -1044,13 +1319,7 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
               </div>
               <p className="mt-2 text-sm text-slate-200">{t.taskValue}</p>
               <p className="mt-4 text-sm leading-7 text-slate-400">
-                {grounded
-                  ? lang === "zh"
-                    ? "根据第 4.2 条，北京地区住宿报销上限为 800 元/晚。此结论来自当前制度；材料未说明的例外情形需另行确认。"
-                    : "Under clause 4.2, the Beijing lodging limit is RMB 800 per night. This conclusion is grounded in the current policy; exceptions not stated in the material require confirmation."
-                  : lang === "zh"
-                    ? "一般而言，北京出差住宿通常可以报销 800 元/晚左右。"
-                    : "In general, lodging in Beijing can usually be reimbursed at around RMB 800 per night."}{" "}
+                {groundingResponse}{" "}
               </p>
             </div>
           </motion.div>
@@ -1061,6 +1330,7 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
             ? "上下文提供证据，人设限定职责，规范约束行为。它们降低无依据补全，但不替代检索、计算、工具校验与人工复核。"
             : "Context provides evidence, role limits responsibility, and rules constrain behavior. They reduce unsupported completion but do not replace retrieval, calculation, tool checks, or human review."}
         </div>
+        <p className="mt-3 text-xs leading-5 text-slate-500">{t.dreamNote}</p>
       </div>
 
       <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8">
@@ -1078,35 +1348,83 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         <div className="mb-4 text-sm font-semibold text-slate-300">
           {t.selectTask}
         </div>
-        <div className="grid gap-3 lg:grid-cols-5">
-          {taskCards[lang].map((item, index) => (
-            <button
-              key={item.title}
-              onClick={() => setTaskIndex(index)}
-              className={`rounded-2xl border p-4 text-left transition ${index === taskIndex ? "border-amber-500/40 bg-amber-500/10" : "border-slate-800 bg-slate-950/50 hover:bg-slate-800/70"}`}
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(340px,0.9fr)]">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {taskCards[lang].map((item, index) => (
+              <button
+                key={item.title}
+                onClick={() => setTaskIndex(index)}
+                className={`min-h-32 rounded-2xl border p-4 text-left transition ${index === taskIndex ? "border-amber-500/40 bg-amber-500/10" : "border-slate-800 bg-slate-950/50 hover:bg-slate-800/70"}`}
+              >
+                <div
+                  className={`text-xs font-bold tracking-[0.18em] ${index === taskIndex ? "text-amber-300" : "text-slate-500"}`}
+                >
+                  0{index + 1}
+                </div>
+                <div className="mt-2 font-semibold text-white">
+                  {item.title}
+                </div>
+                <div className="mt-2 text-sm leading-6 text-slate-400">
+                  <span className="font-semibold text-slate-300">
+                    {lang === "zh" ? "要求：" : "Requirement: "}
+                  </span>
+                  {item.desc}
+                </div>
+              </button>
+            ))}
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTask.title}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="rounded-3xl border border-amber-500/25 bg-amber-950/10 p-5"
             >
-              <div className="font-semibold text-white">{item.title}</div>
-              <div className="mt-2 text-sm leading-6 text-slate-400">
-                {item.desc}
+              <div className="text-xs font-bold uppercase tracking-[0.18em] text-amber-300">
+                {lang === "zh" ? "结论：" : "Conclusion:"}
               </div>
-            </button>
-          ))}
-        </div>
-        <div className="mt-5 grid gap-4 rounded-3xl border border-slate-800 bg-slate-950/50 p-5 md:grid-cols-3">
-          <InfoBlock
-            label={lang === "zh" ? "需要的依据" : "Evidence needed"}
-            value={activeTask.evidence}
-          />
-          <InfoBlock
-            label={lang === "zh" ? "主要风险" : "Primary risk"}
-            value={activeTask.risk}
-          />
-          <InfoBlock
-            label={lang === "zh" ? "产品动作" : "Product action"}
-            value={activeTask.action}
-            tone={strategyTone[activeTask.strategy]}
-            badge={t.strategies[activeTask.strategy]}
-          />
+              <h4 className="mt-3 text-lg font-semibold text-white">
+                {activeTask.title}
+              </h4>
+              <p className="mt-2 text-sm leading-6 text-slate-400">
+                <span className="font-semibold text-slate-300">
+                  {lang === "zh" ? "要求：" : "Requirement: "}
+                </span>
+                {activeTask.desc}
+              </p>
+              <div className="mt-4 rounded-2xl border border-cyan-500/20 bg-cyan-950/10 p-4">
+                <div className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">
+                  {lang === "zh" ? "注入内容" : "Injected content"}
+                </div>
+                <p className="mt-2 whitespace-pre-wrap font-mono text-xs leading-6 text-cyan-100/85">
+                  {activeTask.injected}
+                </p>
+              </div>
+              <div className="mt-5 border-t border-slate-800 pt-4">
+                <InfoBlock
+                  label={lang === "zh" ? "需要的依据" : "Evidence needed"}
+                  value={activeTask.evidence}
+                />
+              </div>
+              <div className="mt-4">
+                <InfoBlock
+                  label={lang === "zh" ? "主要风险" : "Primary risk"}
+                  value={activeTask.risk}
+                />
+              </div>
+              <div className="mt-4 border-t border-slate-800 pt-4">
+                <InfoBlock
+                  label={
+                    lang === "zh" ? "推荐使用方式" : "Recommended approach"
+                  }
+                  value={activeTask.action}
+                  tone={strategyTone[activeTask.strategy]}
+                  badge={t.strategies[activeTask.strategy]}
+                />
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 
@@ -1117,12 +1435,15 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
             <h3 className="text-xl font-semibold text-white">
               {t.protocolTitle}
             </h3>
-            <p className="mt-2 max-w-5xl text-sm leading-7 text-slate-400">
+            <p className="mt-2 text-sm font-semibold leading-7 text-amber-100">
+              {t.protocolSubtitle}
+            </p>
+            <p className="mt-3 text-sm leading-7 text-slate-400">
               {t.protocolText}
             </p>
           </div>
         </div>
-        <div className="mt-6 grid gap-3 lg:grid-cols-4">
+        <div className="mt-6 grid gap-3 lg:grid-cols-5">
           {t.protocolSteps.map((step: string, index: number) => (
             <button
               key={step}
@@ -1141,49 +1462,33 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         <ProtocolPanel lang={lang} t={t} index={protocolIndex} />
       </div>
 
-      <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8">
+      <div className="rounded-3xl border border-purple-500/25 bg-[radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.15),transparent_42%)] bg-slate-900/55 p-6 md:p-8">
         <div className="flex gap-3">
-          <GraduationCap className="mt-1 h-6 w-6 shrink-0 text-purple-400" />
-          <div>
-            <h3 className="text-xl font-semibold text-white">{t.quizTitle}</h3>
-            <p className="mt-2 text-sm text-slate-400">{t.quizText}</p>
-          </div>
+          <CheckCircle2 className="mt-1 h-6 w-6 shrink-0 text-purple-300" />
+          <h3 className="text-xl font-semibold text-white">{t.summaryTitle}</h3>
         </div>
-        <div className="mt-6 grid gap-4 lg:grid-cols-3">
-          {quiz[lang].map((item, index) => (
-            <div
-              key={item.prompt}
-              className="rounded-2xl border border-slate-800 bg-slate-950/50 p-5"
-            >
-              <p className="min-h-12 font-semibold leading-6 text-white">
-                {item.prompt}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {(Object.keys(t.strategies) as Strategy[]).map((strategy) => (
-                  <button
-                    key={strategy}
-                    onClick={() =>
-                      setSelectedQuiz((value) => ({
-                        ...value,
-                        [index]: strategy,
-                      }))
-                    }
-                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${selectedQuiz[index] === strategy ? strategyTone[strategy] : "border-slate-700 text-slate-400 hover:text-slate-200"}`}
-                  >
-                    {t.strategies[strategy]}
-                  </button>
-                ))}
-              </div>
-              {selectedQuiz[index] && (
-                <div className="mt-5 border-t border-slate-800 pt-4 text-sm leading-7 text-slate-400">
-                  <div className="font-semibold text-emerald-300">
-                    {t.correct}: {t.strategies[item.strategy]}
-                  </div>
-                  <p className="mt-2">{item.answer}</p>
+        <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {t.summaryItems.map(
+            (item: { title: string; text: string }, index: number) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4"
+              >
+                <div className="text-xs font-bold tracking-[0.18em] text-purple-300">
+                  0{index + 1}
                 </div>
-              )}
-            </div>
-          ))}
+                <h4 className="mt-2 font-semibold leading-6 text-white">
+                  {item.title}
+                </h4>
+                <p className="mt-2 text-sm leading-6 text-slate-400">
+                  {item.text}
+                </p>
+              </div>
+            ),
+          )}
+        </div>
+        <div className="mt-6 rounded-2xl border border-purple-500/25 bg-purple-950/15 p-5 text-sm leading-7 text-purple-100">
+          {t.summaryPrinciple}
         </div>
       </div>
     </section>
@@ -1214,6 +1519,90 @@ function InfoBlock({
         </span>
       )}
       <p className="mt-3 text-sm leading-7 text-slate-300">{value}</p>
+    </div>
+  );
+}
+
+function DreamStepGraphic({ index, lang }: { index: number; lang: Lang }) {
+  if (index === 0) {
+    return (
+      <div className="relative mt-4 h-24 overflow-hidden rounded-xl border border-indigo-500/20 bg-indigo-950/20">
+        <div className="absolute left-1/2 top-3 flex -translate-x-1/2 flex-col items-center">
+          <div className="rounded-full border border-indigo-300/40 bg-indigo-400/10 p-3 text-indigo-100 shadow-[0_0_24px_rgba(129,140,248,0.25)]">
+            <BrainCircuit className="h-8 w-8" />
+          </div>
+          <span className="mt-1 font-mono text-[10px] tracking-[0.18em] text-indigo-200">
+            DREAM STATE
+          </span>
+        </div>
+        <Moon className="absolute right-5 top-3 h-6 w-6 text-indigo-300/80" />
+        <span className="absolute left-6 top-5 h-1.5 w-1.5 rounded-full bg-indigo-200/60" />
+        <span className="absolute bottom-5 right-12 h-1 w-1 rounded-full bg-indigo-200/50" />
+      </div>
+    );
+  }
+  if (index === 1) {
+    return (
+      <div className="relative mt-4 h-24 overflow-hidden rounded-xl border border-indigo-500/20 bg-slate-950/60 p-4">
+        <div className="grid grid-cols-8 gap-1 opacity-55">
+          {Array.from({ length: 32 }, (_, itemIndex) => (
+            <span
+              key={itemIndex}
+              className={`h-3 rounded-sm ${itemIndex % 7 === 0 ? "bg-indigo-300" : itemIndex % 4 === 0 ? "bg-indigo-600" : "bg-indigo-900"}`}
+            />
+          ))}
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-indigo-300/50 bg-slate-950/90 text-indigo-100 shadow-[0_0_18px_rgba(129,140,248,0.25)]">
+            <Pause className="h-5 w-5" />
+          </div>
+        </div>
+        <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-indigo-200">
+          <span>t = 0</span>
+          <span>
+            {lang === "zh"
+              ? "权重冻结在训练终点"
+              : "WEIGHTS FROZEN AT TRAINING END"}
+          </span>
+        </div>
+      </div>
+    );
+  }
+  if (index === 2) {
+    return (
+      <div className="relative mt-4 h-24 overflow-hidden rounded-xl border border-cyan-500/25 bg-slate-950/60">
+        <div className="absolute left-4 top-5 rounded-xl border border-indigo-400/30 bg-indigo-500/10 p-2 text-indigo-100">
+          <MessageCircle className="h-6 w-6" />
+        </div>
+        <div className="absolute left-[39%] top-7 flex items-center gap-1 text-cyan-200">
+          <span className="h-2 w-2 animate-ping rounded-full bg-cyan-300" />
+          <Zap className="h-5 w-5 fill-cyan-300/20" />
+          <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-300" />
+        </div>
+        <div className="absolute right-4 top-5 rounded-full border border-cyan-300/40 bg-cyan-400/10 p-2 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.3)]">
+          <Clock3 className="h-6 w-6" />
+        </div>
+        <div className="absolute bottom-3 left-4 right-4 h-1 rounded-full bg-indigo-950">
+          <div className="h-full w-full animate-pulse rounded-full bg-cyan-400/80" />
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="relative mt-4 h-24 overflow-hidden rounded-xl border border-cyan-500/25 bg-slate-950/75">
+      <div className="absolute left-4 top-4 h-16 w-16 rounded-full border border-dashed border-cyan-400/35" />
+      <div className="absolute left-[27px] top-[27px] rounded-full border border-cyan-400/30 bg-cyan-950/60 p-2 text-cyan-200">
+        <MapPinOff className="h-6 w-6" />
+      </div>
+      <div className="absolute left-24 right-4 top-1/2 border-t border-dashed border-slate-600" />
+      <span className="absolute left-[46%] top-[38%] bg-slate-950 px-1 font-mono text-xs text-rose-300">
+        ×
+      </span>
+      <div className="absolute right-4 top-5 text-right font-mono text-[10px] leading-5 text-slate-500">
+        REAL WORLD
+        <br />
+        {lang === "zh" ? "信号未接入" : "SIGNAL UNREACHABLE"}
+      </div>
     </div>
   );
 }
@@ -1506,9 +1895,18 @@ function ProtocolPanel({
     lang === "zh"
       ? [
           [
-            "CLIENT",
-            "工具：weather.lookup；参数：city（字符串）、date（日期）",
-            "Client 将可用工具和参数结构作为上下文提供给模型。",
+            "客户端",
+            `{
+  "name": "weather.lookup",
+  "description": "查询指定城市与日期的天气",
+  "parameters": {
+    "city": { "type": "string", "description": "城市名称" },
+    "date": { "type": "string", "format": "date", "description": "查询日期" }
+  },
+  "required": ["city", "date"],
+  "permission": "weather:read"
+}`,
+            "客户端将工具元数据注入上下文：名称告诉模型能调用什么，描述说明何时使用，参数 schema 约束字段与格式；权限提示不授予模型权限，而是供客户端后续校验。",
           ],
           [
             "LLM",
@@ -1516,21 +1914,41 @@ function ProtocolPanel({
             "模型生成的是符合结构约束的 token 序列，也就是调用意图。",
           ],
           [
-            "CLIENT",
+            "客户端",
             "校验：工具许可 ✓  参数格式 ✓  用户确认：无需",
-            "Client 决定是否接受、授权并执行。模型没有绕过这些边界的能力。",
+            "客户端决定是否接受、授权并执行。模型没有绕过这些边界的能力。",
+          ],
+          [
+            "客户端",
+            `{
+  "city": "Shanghai",
+  "date": "2026-07-16",
+  "forecast": "brief_showers",
+  "precipitation_probability": 70,
+  "temperature_celsius": { "min": 25, "max": 28 }
+}`,
+            "客户端接收 weather.lookup 的结构化输出，并将它作为新的上下文回传给模型。",
           ],
           [
             "LLM",
-            "根据工具返回，上海今天下午有短时阵雨，建议携带雨具。",
-            "工具结果进入上下文后，模型才将外部事实组织成用户可读回复。",
+            "上海今天下午有短时阵雨，气温 25–28°C，建议携带雨具。",
+            "模型依据工具返回的外部事实组织自然语言回答；它没有自行查询天气或绕过客户端执行工具。",
           ],
         ]
       : [
           [
             "CLIENT",
-            "Tool: weather.lookup; arguments: city (string), date (date)",
-            "The Client provides available tools and their argument structures as context.",
+            `{
+  "name": "weather.lookup",
+  "description": "Look up weather for a city and date",
+  "parameters": {
+    "city": { "type": "string", "description": "City name" },
+    "date": { "type": "string", "format": "date", "description": "Date to query" }
+  },
+  "required": ["city", "date"],
+  "permission": "weather:read"
+}`,
+            "The Client injects tool metadata into context: the name tells the model what it can call, the description explains when to use it, and the parameter schema constrains fields and formats. A permission hint does not grant the model permission; the Client validates it later.",
           ],
           [
             "LLM",
@@ -1543,18 +1961,35 @@ function ProtocolPanel({
             "The Client decides whether to accept, authorize, and execute. The model cannot bypass these boundaries.",
           ],
           [
+            "CLIENT",
+            `{
+  "city": "Shanghai",
+  "date": "2026-07-16",
+  "forecast": "brief_showers",
+  "precipitation_probability": 70,
+  "temperature_celsius": { "min": 25, "max": 28 }
+}`,
+            "The Client receives weather.lookup's structured output and returns it to the model as new context.",
+          ],
+          [
             "LLM",
-            "The tool result indicates brief showers in Shanghai this afternoon. Bring an umbrella.",
-            "Only after the tool result enters context does the model organize external facts into a user-facing answer.",
+            "Brief showers are expected in Shanghai this afternoon, with temperatures of 25–28°C. Bring an umbrella.",
+            "The model turns external facts from the tool output into a natural-language reply. It did not look up weather itself or bypass the Client to execute the tool.",
           ],
         ];
   const [actor, content, explanation] = lines[index];
   return (
     <div className="mt-5 grid gap-4 rounded-3xl border border-slate-800 bg-slate-950/60 p-5 lg:grid-cols-[160px_minmax(0,1fr)]">
       <div
-        className={`rounded-2xl border p-4 text-sm font-bold tracking-[0.18em] ${actor === "LLM" ? "border-purple-500/30 bg-purple-500/10 text-purple-200" : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"}`}
+        aria-label={actor === "LLM" ? t.model : t.client}
+        title={actor === "LLM" ? t.model : t.client}
+        className={`flex min-h-20 items-center justify-center rounded-2xl border p-4 ${actor === "LLM" ? "border-purple-500/30 bg-purple-500/10 text-purple-200" : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"}`}
       >
-        {actor === "LLM" ? t.model : t.client}
+        {actor === "LLM" ? (
+          <BrainCircuit className="h-9 w-9" aria-hidden="true" />
+        ) : (
+          <MonitorCog className="h-9 w-9" aria-hidden="true" />
+        )}
       </div>
       <div>
         <pre className="overflow-x-auto whitespace-pre-wrap rounded-2xl border border-slate-800 bg-slate-900/60 p-4 font-mono text-sm leading-7 text-slate-200">
