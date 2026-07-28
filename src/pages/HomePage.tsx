@@ -4,7 +4,6 @@ import {
   BookOpen,
   BrainCircuit,
   Layers3,
-  Sparkles,
   Workflow,
 } from "lucide-react";
 import PageChrome from "../components/PageChrome";
@@ -17,43 +16,49 @@ const copy = {
     title: "大模型应用课程",
     subtitle: "从原理到工程实践",
     tagline: "从提示词到生产力 · Prompt to Product",
-    coursesTitle: "精选课程",
     enterCourse: "进入课程",
     courseIntroTitle: "课程导览",
+    navigationTitle: "内容导航",
     footer: "© 2026 HCLife Education / 大模型应用课程. All rights reserved.",
     homeLead:
       "这是一个围绕 LLM 与 Agent 的知识课程演示网站。首页用于整站介绍与课程分发，进入课程后提供更宽的沉浸式阅读和演示空间。",
     moduleCards: {
       evolution: {
         title: "LLM 应用架构演进",
-        desc: "从单轮调用到多智能体协作的能力跃迁。",
+        desc: "从单轮调用到多智能体协作，理解 LLM 应用如何一步步走向更完整的工程系统。",
         level: "课程 01",
         outcomes: [
-          "理解 LLM 能力边界",
-          "看懂 Tool Call 与 Agent 演进",
-          "掌握多智能体协同全景",
+          "单轮文本生成",
+          "工具调用与执行分离",
+          "记忆、状态与连续决策",
+          "多智能体分工与审查",
         ],
         href: "./evolution.html",
       },
       "client-tools": {
         title: "客户端与工具驱动原理",
-        desc: "解释 Client、Agent、Skill、Tool Call 的协作机制。",
+        desc: "以课程演示方式解释 Client、Agent、Skill 与 Tool Call 之间的协作机制。",
         level: "课程 02",
         outcomes: [
-          "建立 Client 与 LLM 边界感",
-          "理解 Agent / Skill 解耦",
-          "看懂真实执行链路",
+          "LLM 与 Client 的边界",
+          "标准 Agentic Loop",
+          "Agent 与 Skill 解耦",
+          "Skill 按需注入",
+          "三类常见 Tool Call",
         ],
         href: "./client-tools.html",
       },
       "model-boundaries": {
         title: "大模型：生成与能力边界",
-        desc: "理解文字生成、幻觉、上下文锚定与 Tool Call 的语言本质。",
+        desc: "大模型的本质是什么？理解模型如何生成文字、为何出现幻觉，以及了解如何通过上下文工程将模型从“梦境”拉回现实。",
         level: "课程 03",
         outcomes: [
-          "理解 Next Token 生成",
-          "识别幻觉与证据边界",
-          "判断验证与复核策略",
+          "模型（LLM）是什么？",
+          "模型是怎样工作的？",
+          "如何理解模型的能力？",
+          "模型的短板是什么？",
+          "应用中如何扬长避短？",
+          "模型的输出是文字，为何可以调用工具？",
         ],
         href: "./model-boundaries.html",
       },
@@ -64,9 +69,9 @@ const copy = {
     title: "Applied LLM Academy",
     subtitle: "From Principles to Engineering Practice",
     tagline: "Prompt to Product",
-    coursesTitle: "Featured Courses",
     enterCourse: "Open Course",
     courseIntroTitle: "Course Overview",
+    navigationTitle: "Contents",
     footer:
       "© 2026 HCLife Education / Applied LLM Academy. All rights reserved.",
     homeLead:
@@ -74,34 +79,40 @@ const copy = {
     moduleCards: {
       evolution: {
         title: "LLM Application Architecture Evolution",
-        desc: "The progression from single-call inference to multi-agent collaboration.",
+        desc: "From single-call inference to multi-agent collaboration, this course explains how LLM applications evolve into fuller engineering systems.",
         level: "Course 01",
         outcomes: [
-          "Understand LLM capability boundaries",
-          "Read the evolution from tool calls to agents",
-          "Build a full picture of multi-agent collaboration",
+          "Single-call text generation",
+          "Tool calls and execution separation",
+          "Memory, state, and iterative decisions",
+          "Multi-agent roles and review",
         ],
         href: "./evolution.html",
       },
       "client-tools": {
         title: "Client and Tool Driving Fundamentals",
-        desc: "How Client, Agent, Skill, and Tool Calls work together.",
+        desc: "This course explains how Client, Agent, Skill, and Tool Calls cooperate in a wide-screen presentation layout.",
         level: "Course 02",
         outcomes: [
-          "Build boundary awareness between client and model",
-          "Understand Agent / Skill decoupling",
-          "Follow the real execution chain",
+          "The LLM and Client boundary",
+          "The standard Agentic Loop",
+          "Agent and Skill decoupling",
+          "On-demand Skill injection",
+          "Three common Tool Call classes",
         ],
         href: "./client-tools.html",
       },
       "model-boundaries": {
         title: "Large Language Models: Generation and Capability Boundaries",
-        desc: "Understand text generation, hallucination, contextual grounding, and the language nature of Tool Calls.",
+        desc: 'What is the essence of an LLM? Understand how models generate text, why hallucinations occur, and how context engineering brings a model back from its "dream" to reality.',
         level: "Course 03",
         outcomes: [
-          "Understand next-token generation",
-          "Recognize hallucination and evidence boundaries",
-          "Choose verification and review strategies",
+          "What is an LLM?",
+          "How does a model work?",
+          "How should we understand a model's capabilities?",
+          "What are a model's limitations?",
+          "How do we use its strengths while managing its limits?",
+          "If its output is text, how can a model call tools?",
         ],
         href: "./model-boundaries.html",
       },
@@ -157,83 +168,98 @@ export default function HomePage() {
       subtitle={t.subtitle}
       footer={t.footer}
     >
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <main className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-6 md:p-8">
-          <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
+      <section className="grid gap-6 xl:grid-cols-[180px_minmax(0,1fr)]">
+        <aside className="hidden xl:block">
+          <nav className="sticky top-6 border-l border-slate-800 pl-4">
+            <div className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              {t.navigationTitle}
+            </div>
+            <div className="space-y-1">
+              {modules.map((module, index) => (
+                <a
+                  key={module.href}
+                  href={`#course-${index + 1}`}
+                  className="group relative block py-2 text-sm leading-5 text-slate-500 transition hover:text-slate-200"
+                >
+                  <span className="absolute -left-[18px] top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-slate-700 transition group-hover:bg-blue-400" />
+                  <span className="mr-2 font-mono text-xs text-slate-600">
+                    0{index + 1}
+                  </span>
+                  {module.title}
+                </a>
+              ))}
+            </div>
+          </nav>
+        </aside>
+        <main className="rounded-[28px] border border-slate-800 bg-slate-900/60 p-5 md:p-6">
+          <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
             <BookOpen className="h-4 w-4 text-blue-400" />
             {t.courseIntroTitle}
           </div>
-          <div className="mb-6 inline-flex rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-200 shadow-[0_0_40px_rgba(59,130,246,0.12)]">
+          <div className="mb-4 inline-flex rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-sm font-semibold text-blue-200 shadow-[0_0_40px_rgba(59,130,246,0.12)]">
             {t.tagline}
           </div>
-          <p className="mb-6 max-w-3xl text-sm leading-7 text-slate-500 md:text-base">
+          <p className="mb-5 max-w-3xl text-sm leading-6 text-slate-500">
             {t.homeLead}
           </p>
-          <div className="grid gap-5 xl:grid-cols-2">
-            {modules.map((module) => (
+          <div className="grid gap-3">
+            {modules.map((module, index) => (
               <article
                 key={module.href}
-                className="group overflow-hidden rounded-[28px] border border-slate-800 bg-slate-950/60"
+                id={`course-${index + 1}`}
+                className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/60"
               >
                 <div
-                  className={`relative p-6 md:p-7 ${module.accent === "blue" ? "bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.18),transparent_38%)]" : module.accent === "emerald" ? "bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.18),transparent_38%)]" : "bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.18),transparent_38%)]"}`}
+                  className={`relative p-4 md:p-5 ${module.accent === "blue" ? "bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.18),transparent_38%)]" : module.accent === "emerald" ? "bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.18),transparent_38%)]" : "bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.18),transparent_38%)]"}`}
                 >
                   <div className="absolute inset-0 opacity-40">
-                    <div className="absolute right-6 top-6 h-24 w-24 rounded-full border border-white/10" />
-                    <div className="absolute right-14 top-14 h-12 w-12 rounded-full border border-white/10" />
+                    <div className="absolute right-5 top-5 h-16 w-16 rounded-full border border-white/10" />
+                    <div className="absolute right-10 top-10 h-8 w-8 rounded-full border border-white/10" />
                   </div>
 
-                  <div className="relative flex items-start justify-between gap-4">
-                    <div>
+                  <div className="relative grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+                    <div className="min-w-0">
                       <div
-                        className={`mb-3 inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] ${module.accent === "blue" ? "border-blue-500/30 bg-blue-500/10 text-blue-300" : module.accent === "emerald" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-purple-500/30 bg-purple-500/10 text-purple-300"}`}
+                        className={`mb-2 inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.22em] ${module.accent === "blue" ? "border-blue-500/30 bg-blue-500/10 text-blue-300" : module.accent === "emerald" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-purple-500/30 bg-purple-500/10 text-purple-300"}`}
                       >
                         {module.level}
                       </div>
-                      <div className="mb-4 flex items-center gap-3 text-white">
+                      <div className="flex items-center gap-2.5 text-white">
                         <span
-                          className={`rounded-xl border border-white/10 bg-slate-900/60 p-3 ${module.accent === "blue" ? "text-blue-300" : module.accent === "emerald" ? "text-emerald-300" : "text-purple-300"}`}
+                          className={`rounded-lg border border-white/10 bg-slate-900/60 p-2 ${module.accent === "blue" ? "text-blue-300" : module.accent === "emerald" ? "text-emerald-300" : "text-purple-300"}`}
                         >
                           {module.icon}
                         </span>
-                        <span className="text-2xl font-semibold">
+                        <span className="text-lg font-semibold md:text-xl">
                           {module.title}
                         </span>
                       </div>
+                      <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+                        {module.desc}
+                      </p>
                     </div>
-                    <div className="hidden rounded-2xl border border-white/10 bg-slate-900/50 p-3 text-slate-500 lg:block">
-                      <Sparkles className="h-5 w-5" />
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-slate-800 pt-3 text-sm leading-5 text-slate-300 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
+                      {module.outcomes.map(
+                        (outcome: string, outcomeIndex: number) => (
+                          <div key={outcome} className="flex items-start gap-2">
+                            <span
+                              className={`shrink-0 font-mono text-xs font-bold leading-5 ${module.accent === "blue" ? "text-blue-400" : module.accent === "emerald" ? "text-emerald-400" : "text-purple-400"}`}
+                            >
+                              0{outcomeIndex + 1}
+                            </span>
+                            <span>{outcome}</span>
+                          </div>
+                        ),
+                      )}
                     </div>
                   </div>
 
-                  <p className="relative max-w-xl text-sm leading-7 text-slate-400 md:text-base">
-                    {module.desc}
-                  </p>
-
-                  <div className="relative mt-6 grid gap-3 md:grid-cols-3">
-                    {module.outcomes.map((outcome: string, index: number) => (
-                      <div
-                        key={outcome}
-                        className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"
-                      >
-                        <div
-                          className={`mb-2 text-xs font-bold uppercase tracking-[0.2em] ${module.accent === "blue" ? "text-blue-400" : module.accent === "emerald" ? "text-emerald-400" : "text-purple-400"}`}
-                        >
-                          0{index + 1}
-                        </div>
-                        <div className="text-sm leading-6 text-slate-300">
-                          {outcome}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="relative mt-6 flex items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
+                  <div className="relative mt-3 flex items-center justify-between gap-4 border-t border-slate-800 pt-3">
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                         Preview
                       </div>
-                      <div className="mt-2 text-sm text-slate-300">
+                      <div className="mt-1 text-xs leading-5 text-slate-400 md:text-sm">
                         {module.accent === "blue"
                           ? lang === "zh"
                             ? "阶段切换 + 动态拓扑可视化 + 演进讲解"
@@ -249,7 +275,7 @@ export default function HomePage() {
                     </div>
                     <a
                       href={module.href}
-                      className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition group-hover:translate-x-0.5 ${module.accent === "blue" ? "border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20" : module.accent === "emerald" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20" : "border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"}`}
+                      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition group-hover:translate-x-0.5 ${module.accent === "blue" ? "border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20" : module.accent === "emerald" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20" : "border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"}`}
                     >
                       {t.enterCourse}
                       <ArrowRight className="h-4 w-4" />
@@ -260,33 +286,6 @@ export default function HomePage() {
             ))}
           </div>
         </main>
-
-        <aside className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-5">
-          <div className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
-            {t.coursesTitle}
-          </div>
-          <div className="space-y-3">
-            {modules.map((module) => (
-              <a
-                key={module.href}
-                href={module.href}
-                className="block rounded-2xl border border-slate-800 bg-slate-950/40 p-4 text-left transition hover:bg-slate-800/60"
-              >
-                <div className="mb-2 flex items-center gap-3 text-white">
-                  <span
-                    className={`rounded-xl border border-white/10 bg-slate-900/60 p-2 ${module.accent === "blue" ? "text-blue-300" : module.accent === "emerald" ? "text-emerald-300" : "text-purple-300"}`}
-                  >
-                    {module.icon}
-                  </span>
-                  <span className="font-semibold">{module.title}</span>
-                </div>
-                <p className="text-sm leading-6 text-slate-400">
-                  {module.desc}
-                </p>
-              </a>
-            ))}
-          </div>
-        </aside>
       </section>
     </PageChrome>
   );

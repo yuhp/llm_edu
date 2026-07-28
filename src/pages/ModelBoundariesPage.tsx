@@ -10,7 +10,7 @@ const copy = {
     eyebrow: "HCLife Education",
     title: "课程 03：大模型：生成与能力边界",
     subtitle:
-      "理解模型如何生成文字、为何出现幻觉，以及上下文如何将模型从“梦境”拉回现实。",
+      "大模型的本质是什么？理解模型如何生成文字、为何出现幻觉，以及了解如何通过上下文工程将模型从“梦境”拉回现实。",
     footer: "© 2026 HCLife Education / 大模型应用课程. All rights reserved.",
     backHome: "返回首页",
   },
@@ -19,7 +19,7 @@ const copy = {
     title:
       "Course 03: Large Language Models: Generation and Capability Boundaries",
     subtitle:
-      "Learn how models generate text, why hallucinations occur, and how context grounds a model in reality.",
+      'What is the essence of an LLM? Understand how models generate text, why hallucinations occur, and how context engineering brings a model back from its "dream" to reality.',
     footer:
       "© 2026 HCLife Education / Applied LLM Academy. All rights reserved.",
     backHome: "Back Home",
