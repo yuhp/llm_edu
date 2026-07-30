@@ -16,7 +16,7 @@ const copy = {
     title: "大模型应用课程",
     subtitle: "从原理到工程实践",
     tagline: "从提示词到生产力 · Prompt to Product",
-    enterCourse: "进入课程",
+    enterCourse: "查看完整课程",
     courseIntroTitle: "课程导览",
     navigationTitle: "内容导航",
     footer: "© 2026 HCLife Education / 大模型应用课程. All rights reserved.",
@@ -69,7 +69,7 @@ const copy = {
     title: "Applied LLM Academy",
     subtitle: "From Principles to Engineering Practice",
     tagline: "Prompt to Product",
-    enterCourse: "Open Course",
+    enterCourse: "Explore the Full Course",
     courseIntroTitle: "Course Overview",
     navigationTitle: "Contents",
     footer:
@@ -204,10 +204,11 @@ export default function HomePage() {
           </p>
           <div className="grid gap-3">
             {modules.map((module, index) => (
-              <article
+              <a
                 key={module.href}
                 id={`course-${index + 1}`}
-                className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/60"
+                href={module.href}
+                className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/60 transition hover:border-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
               >
                 <div
                   className={`relative p-4 md:p-5 ${module.accent === "blue" ? "bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.18),transparent_38%)]" : module.accent === "emerald" ? "bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.18),transparent_38%)]" : "bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.18),transparent_38%)]"}`}
@@ -254,8 +255,8 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  <div className="relative mt-3 flex items-center justify-between gap-4 border-t border-slate-800 pt-3">
-                    <div>
+                  <div className="relative mt-3 grid gap-3 border-t border-slate-800 pt-3 lg:grid-cols-4 lg:items-center lg:gap-4">
+                    <div className="lg:col-span-2">
                       <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                         Preview
                       </div>
@@ -273,16 +274,15 @@ export default function HomePage() {
                               : "Token-generation demo, dream-to-reality switchboard, and boundary judgment"}
                       </div>
                     </div>
-                    <a
-                      href={module.href}
-                      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition group-hover:translate-x-0.5 ${module.accent === "blue" ? "border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20" : module.accent === "emerald" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20" : "border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20"}`}
+                    <span
+                      className={`inline-flex w-fit shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition group-hover:translate-x-0.5 lg:col-start-4 lg:justify-self-start ${module.accent === "blue" ? "border-blue-500/30 bg-blue-500/10 text-blue-300 group-hover:bg-blue-500/20" : module.accent === "emerald" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 group-hover:bg-emerald-500/20" : "border-purple-500/30 bg-purple-500/10 text-purple-300 group-hover:bg-purple-500/20"}`}
                     >
                       {t.enterCourse}
                       <ArrowRight className="h-4 w-4" />
-                    </a>
+                    </span>
                   </div>
                 </div>
-              </article>
+              </a>
             ))}
           </div>
         </main>

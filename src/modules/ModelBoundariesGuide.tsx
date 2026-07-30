@@ -15,6 +15,7 @@ import {
   MessageCircle,
   MonitorCog,
   Moon,
+  MousePointerClick,
   Pause,
   Scale,
   ShieldCheck,
@@ -43,13 +44,19 @@ const copy = {
     modelTitle: "LLM 到底是什么？",
     modelText:
       "用四张卡片，从神经网络、训练参数到下一 Token 推理，建立一个足够准确的心智模型。",
+    modelInteraction: "点击右侧任一步，左侧内容会随之切换。建议从第 1 步开始。",
+    modelStart: "从这里开始",
+    modelOverlayTitle: "四步互动讲解",
+    modelOverlayText: "点击右侧任一步，观察这里的模型解释如何变化。",
+    modelOverlayAction: "点击右侧步骤开始",
     formula: "P(next token | current context)",
     modelPoints: [
       "训练知识被压缩进参数，不等于逐条检索原始资料。",
       "模型不天然拥有事实保证、实时信息或外部执行权限。",
     ],
-    unitTitle: "模型参数与处理单元",
-    unitText: "区分模型如何切分文字，以及系统如何从候选中选择下一个 Token。",
+    unitTitle: "Token 与 Temperature：生成过程中的两个概念",
+    unitText:
+      "Token 是模型处理和生成文字的基本单位；Temperature 是推理时影响候选选择随机性的参数。二者都不等同于训练权重或模型记住的知识量。",
     tokenTitle: "Token：模型处理文字的基本单元",
     tokenText:
       "Token 不是固定等于一个汉字或一个单词。它可能是一个字符、词的一部分、标点，或带有前导空格的英文词片段。模型每轮预测并追加一个 Token。",
@@ -192,14 +199,21 @@ const copy = {
     modelTitle: "What is an LLM?",
     modelText:
       "Use four cards to build an accurate mental model: neural network, trained parameters, and next-token inference.",
+    modelInteraction:
+      "Click any step on the right to update the explanation on the left. Start with step 1.",
+    modelStart: "Start here",
+    modelOverlayTitle: "Four-step interactive walkthrough",
+    modelOverlayText:
+      "Select any step on the right to see the model explanation here change.",
+    modelOverlayAction: "Choose a step on the right",
     formula: "P(next token | current context)",
     modelPoints: [
       "Training knowledge is compressed into parameters, not retrieved record by record.",
       "A model does not inherently guarantee facts, possess live information, or hold execution permissions.",
     ],
-    unitTitle: "Model parameters and processing units",
+    unitTitle: "Tokens and Temperature: two concepts in generation",
     unitText:
-      "Separate how a model breaks text into units from how a system selects the next token from candidates.",
+      "A token is the basic unit a model uses to process and generate text. Temperature is an inference-time parameter that affects randomness when selecting candidates. Neither is the model's trained weights or a measure of knowledge.",
     tokenTitle: "Token: the basic unit used to process text",
     tokenText:
       "A token is not fixed to one word or one character. It can be a character, part of a word, punctuation, or an English word fragment with a leading space. The model predicts and appends one token at a time.",
@@ -942,14 +956,19 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         </div>
       </div>
 
-      <ModelExplainer
-        lang={lang}
-        t={t}
-        slide={modelSlide}
-        setSlide={setModelSlide}
-      />
+      <div id="what-is-an-llm" className="scroll-mt-24">
+        <ModelExplainer
+          lang={lang}
+          t={t}
+          slide={modelSlide}
+          setSlide={setModelSlide}
+        />
+      </div>
 
-      <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8">
+      <div
+        id="tokens-temperature"
+        className="scroll-mt-24 rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8"
+      >
         <div className="flex gap-3">
           <Binary className="mt-1 h-6 w-6 shrink-0 text-cyan-400" />
           <div>
@@ -985,7 +1004,7 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
 
       <div
         id="generation-example"
-        className="rounded-3xl border border-slate-800 bg-slate-900/55 p-5 md:p-7"
+        className="scroll-mt-24 rounded-3xl border border-slate-800 bg-slate-900/55 p-5 md:p-7"
       >
         <div className="mb-6 flex items-start gap-3">
           <Binary className="mt-1 h-6 w-6 shrink-0 text-cyan-400" />
@@ -1088,7 +1107,10 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         <p className="mt-4 text-xs leading-5 text-slate-500">{t.note}</p>
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-indigo-500/20 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.15),transparent_38%)] bg-slate-900/55 p-6 md:p-8">
+      <div
+        id="dream-brain"
+        className="scroll-mt-24 overflow-hidden rounded-3xl border border-indigo-500/20 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.15),transparent_38%)] bg-slate-900/55 p-6 md:p-8"
+      >
         <div className="flex gap-3">
           <BrainCircuit className="mt-1 h-6 w-6 shrink-0 text-indigo-300" />
           <div>
@@ -1118,7 +1140,10 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8">
+      <div
+        id="model-shortfalls"
+        className="scroll-mt-24 rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8"
+      >
         <div className="flex gap-3">
           <Scale className="mt-1 h-6 w-6 shrink-0 text-amber-400" />
           <div>
@@ -1176,7 +1201,10 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-violet-500/20 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.12),transparent_38%)] bg-slate-900/55 p-6 md:p-8">
+      <div
+        id="model-strengths"
+        className="scroll-mt-24 rounded-3xl border border-violet-500/20 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.12),transparent_38%)] bg-slate-900/55 p-6 md:p-8"
+      >
         <div className="flex gap-3">
           <Sparkles className="mt-1 h-6 w-6 shrink-0 text-violet-300" />
           <div>
@@ -1236,7 +1264,10 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-cyan-500/20 bg-slate-900/55 p-6 md:p-8">
+      <div
+        id="context-engineering"
+        className="scroll-mt-24 rounded-3xl border border-cyan-500/20 bg-slate-900/55 p-6 md:p-8"
+      >
         <div className="mb-6 flex gap-3">
           <Sparkles className="mt-1 h-6 w-6 shrink-0 text-cyan-400" />
           <div>
@@ -1333,7 +1364,10 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         <p className="mt-3 text-xs leading-5 text-slate-500">{t.dreamNote}</p>
       </div>
 
-      <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8">
+      <div
+        id="task-strategies"
+        className="scroll-mt-24 rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8"
+      >
         <div className="mb-6 flex gap-3">
           <Scale className="mt-1 h-6 w-6 shrink-0 text-amber-400" />
           <div>
@@ -1428,7 +1462,10 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-amber-500/20 bg-slate-900/55 p-6 md:p-8">
+      <div
+        id="tool-call-protocol"
+        className="scroll-mt-24 rounded-3xl border border-amber-500/20 bg-slate-900/55 p-6 md:p-8"
+      >
         <div className="flex gap-3">
           <Wrench className="mt-1 h-6 w-6 shrink-0 text-amber-400" />
           <div>
@@ -1462,7 +1499,10 @@ export default function ModelBoundariesGuide({ lang }: { lang: Lang }) {
         <ProtocolPanel lang={lang} t={t} index={protocolIndex} />
       </div>
 
-      <div className="rounded-3xl border border-purple-500/25 bg-[radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.15),transparent_42%)] bg-slate-900/55 p-6 md:p-8">
+      <div
+        id="course-summary"
+        className="scroll-mt-24 rounded-3xl border border-purple-500/25 bg-[radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.15),transparent_42%)] bg-slate-900/55 p-6 md:p-8"
+      >
         <div className="flex gap-3">
           <CheckCircle2 className="mt-1 h-6 w-6 shrink-0 text-purple-300" />
           <h3 className="text-xl font-semibold text-white">{t.summaryTitle}</h3>
@@ -1620,6 +1660,7 @@ function ModelExplainer({
 }) {
   const slides = modelSlides[lang];
   const active = slides[slide];
+  const [hasStarted, setHasStarted] = useState(false);
   const previous = () => setSlide((slide + slides.length - 1) % slides.length);
   const next = () => setSlide((slide + 1) % slides.length);
 
@@ -1635,7 +1676,7 @@ function ModelExplainer({
         </div>
       </div>
       <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="min-h-[290px] overflow-hidden rounded-3xl border border-purple-500/20 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.16),transparent_45%)] bg-slate-950/55 p-5 md:p-6">
+        <div className="relative min-h-[290px] overflow-hidden rounded-3xl border border-purple-500/20 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.16),transparent_45%)] bg-slate-950/55 p-5 md:p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={slide}
@@ -1660,34 +1701,67 @@ function ModelExplainer({
               />
             </motion.div>
           </AnimatePresence>
+          {!hasStarted && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/80 p-5 backdrop-blur-[2px]">
+              <button
+                onClick={() => setHasStarted(true)}
+                className="max-w-sm rounded-2xl border border-purple-400/40 bg-purple-500/15 p-5 text-left shadow-[0_0_36px_rgba(168,85,247,0.2)] transition hover:border-purple-300 hover:bg-purple-500/25"
+              >
+                <MousePointerClick className="h-6 w-6 text-purple-300" />
+                <div className="mt-3 font-semibold text-white">
+                  {t.modelOverlayTitle}
+                </div>
+                <p className="mt-2 text-sm leading-6 text-purple-100/80">
+                  {t.modelOverlayText}
+                </p>
+                <span className="mt-4 inline-flex items-center gap-2 rounded-full border border-purple-400/35 bg-purple-400/10 px-3 py-2 text-sm font-semibold text-purple-100">
+                  {t.modelOverlayAction}
+                  <ChevronRight className="h-5 w-5 animate-pulse" />
+                </span>
+              </button>
+              <ChevronRight className="absolute -right-2 top-1/2 hidden h-14 w-14 -translate-y-1/2 animate-pulse text-purple-300 xl:block" />
+            </div>
+          )}
         </div>
-        <aside className="rounded-3xl border border-slate-800 bg-slate-950/40 p-5">
-          <div className="flex items-center justify-between gap-3">
+        <aside className="relative rounded-3xl border border-slate-800 bg-slate-950/40 p-5">
+          <div>
             <div className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
               {lang === "zh" ? "四步心智模型" : "Four-step mental model"}
             </div>
-            <div className="animate-pulse text-xs font-semibold text-purple-300">
-              {lang === "zh" ? "点击步骤探索" : "Click to explore"}{" "}
-              <ChevronRight className="inline h-3.5 w-3.5" />
+            <div className="mt-3 flex items-start gap-2 rounded-xl border border-purple-500/25 bg-purple-500/10 px-3 py-2.5 text-sm leading-5 text-purple-100">
+              <MousePointerClick className="mt-0.5 h-4 w-4 shrink-0 text-purple-300" />
+              <span>{t.modelInteraction}</span>
             </div>
           </div>
           <div className="mt-4 space-y-2">
             {slides.map((item, index) => (
               <button
                 key={item.label}
-                onClick={() => setSlide(index)}
-                className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition ${index === slide ? "border-purple-500/40 bg-purple-500/10 text-purple-100" : "border-slate-800 text-slate-400 hover:bg-slate-800/70 hover:text-slate-200"}`}
+                onClick={() => {
+                  setHasStarted(true);
+                  setSlide(index);
+                }}
+                aria-pressed={index === slide}
+                className={`relative w-full rounded-xl border px-3 py-2.5 text-left text-sm transition ${index === slide ? "border-purple-500/40 bg-purple-500/10 text-purple-100" : "border-slate-800 text-slate-400 hover:bg-slate-800/70 hover:text-slate-200"}`}
               >
                 <span className="mr-2 font-mono text-xs text-purple-300">
                   0{index + 1}
                 </span>
                 {item.title}
+                {index === 0 && slide === 0 && (
+                  <span className="ml-2 rounded-full border border-purple-400/30 bg-purple-400/10 px-1.5 py-0.5 text-[10px] font-semibold text-purple-200">
+                    {t.modelStart}
+                  </span>
+                )}
               </button>
             ))}
           </div>
           <div className="mt-5 flex items-center justify-between border-t border-slate-800 pt-4">
             <button
-              onClick={previous}
+              onClick={() => {
+                setHasStarted(true);
+                previous();
+              }}
               aria-label={lang === "zh" ? "上一张卡片" : "Previous card"}
               className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:border-purple-500/40 hover:text-white"
             >
@@ -1702,7 +1776,10 @@ function ModelExplainer({
               ))}
             </div>
             <button
-              onClick={next}
+              onClick={() => {
+                setHasStarted(true);
+                next();
+              }}
               aria-label={lang === "zh" ? "下一张卡片" : "Next card"}
               className="rounded-lg border border-slate-700 p-2 text-slate-300 transition hover:border-purple-500/40 hover:text-white"
             >

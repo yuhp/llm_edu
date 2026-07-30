@@ -438,7 +438,10 @@ export default function ClientToolGuide({ lang }: { lang: Lang }) {
 
   return (
     <section className="space-y-6">
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_420px]">
+      <div
+        id="llm-client-boundary"
+        className="scroll-mt-24 grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_420px]"
+      >
         <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8">
           <h2 className="text-3xl font-bold text-white md:text-5xl">
             {t.title}
@@ -511,11 +514,16 @@ export default function ClientToolGuide({ lang }: { lang: Lang }) {
         </aside>
       </div>
 
-      <AgenticLoopShowcase lang={lang} title={t.loopTitle} />
+      <div id="agentic-loop" className="scroll-mt-24">
+        <AgenticLoopShowcase lang={lang} title={t.loopTitle} />
+      </div>
 
       <div className="space-y-6">
         <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8">
+          <div
+            id="agent-skill"
+            className="scroll-mt-24 rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8"
+          >
             <div className="mb-4 flex items-center gap-3">
               <Layers className="h-6 w-6 text-amber-400" />
               <h3 className="text-xl font-semibold text-white">
@@ -555,7 +563,10 @@ export default function ClientToolGuide({ lang }: { lang: Lang }) {
             />
           </div>
 
-          <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-5 md:p-6">
+          <div
+            id="tool-call-types"
+            className="scroll-mt-24 rounded-3xl border border-slate-800 bg-slate-900/55 p-5 md:p-6"
+          >
             <div className="mb-4 flex items-center gap-3">
               <Wrench className="h-6 w-6 text-rose-400" />
               <h3 className="text-xl font-semibold text-white">
@@ -613,7 +624,10 @@ export default function ClientToolGuide({ lang }: { lang: Lang }) {
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_360px]">
+      <div
+        id="execution-scenario"
+        className="scroll-mt-24 grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_360px]"
+      >
         <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-6 md:p-8">
           <div className="mb-4 flex items-center gap-3">
             <PlayCircle className="h-6 w-6 text-cyan-400" />
@@ -691,7 +705,10 @@ export default function ClientToolGuide({ lang }: { lang: Lang }) {
         </aside>
       </div>
 
-      <div className="rounded-3xl border border-slate-800 bg-slate-900/55 p-4 md:p-5">
+      <div
+        id="course-quiz"
+        className="scroll-mt-24 rounded-3xl border border-slate-800 bg-slate-900/55 p-4 md:p-5"
+      >
         <div className="mb-4 flex items-center gap-3">
           <Brain className="h-6 w-6 text-blue-400" />
           <h3 className="text-xl font-semibold text-white">{t.quizTitle}</h3>
